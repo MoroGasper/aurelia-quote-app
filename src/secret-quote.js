@@ -15,7 +15,9 @@ export class SecretQuote {
   secretQuote = '';
 
   constructor(http) {
-    this.http = http;
+    this.http = http.configure(x => {
+      x.withHeader('Authorization', 'Bearer ' + localStorage.getItem('aurelia_id_token'));
+    });
   };
 
   activate() {

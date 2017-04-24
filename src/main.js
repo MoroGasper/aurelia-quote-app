@@ -1,4 +1,5 @@
 import environment from './environment';
+import config from './auth-config';
 
 //Configure Bluebird Promises.
 //Note: You may want to use environment-specific configuration.

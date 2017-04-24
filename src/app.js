@@ -25,7 +25,6 @@ export class App {
   activate() {
 
     // Here we run the configuration when the app loads
-    console.log(this.fetchConfig);
     this.fetchConfig.configure();
     this.appRouterConfig.configure();
 

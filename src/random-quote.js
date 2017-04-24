@@ -19,7 +19,7 @@ export class RandomQuote {
   };
 
   activate() {
-    return this.http.get('http://localhost:3001/api/random-quote')
+    return this.http.get('http://localhost:3002/api/random-quote')
     .then(response => {
       this.randomQuote = response.content;
     }).catch(error => {
