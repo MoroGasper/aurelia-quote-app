@@ -30,7 +30,8 @@ export class Signup {
 
     return this.auth.signup(userInfo)
     .then((response) => {
-      console.log("Signed Up!");
+      localStorage.setItem('access_token', response.access_token);
+      console.log("Signed Up!", response);
     })
     .catch(error => {
       this.signupError = error.response;

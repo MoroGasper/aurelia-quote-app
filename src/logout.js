@@ -17,6 +17,7 @@ export class Logout {
     // and we will be redirected to the login view
     this.authService.logout("#/login")
     .then(response => {
+      localStorage.removeItem('access_token');
       console.log("Logged Out");
     })
     .catch(err => {

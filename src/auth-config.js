@@ -4,9 +4,9 @@
 
 var config = {
 
-  // Our Node API is being served from localhost:3001
-  baseUrl: 'http://localhost:3001',
-  // The API specifies that new users register at the POST /users enpoint
+  // Our Node API is being served from localhost:3002
+  baseUrl: 'http://localhost:3002',
+  // The API specifies that new users register at the POST /users endpoint
   signupUrl: 'users',
   // Logins happen at the POST /sessions/create endpoint
   loginUrl: 'sessions/create',

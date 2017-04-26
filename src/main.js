@@ -12,6 +12,9 @@ Promise.config({
 export function configure(aurelia) {
   aurelia.use
     .standardConfiguration()
+    .plugin('aurelia-auth', (baseConfig) =>  {
+      baseConfig.configure(config);
+    })
     .feature('resources');
 
   if (environment.debug) {

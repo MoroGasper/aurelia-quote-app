@@ -50,7 +50,7 @@ define('auth-config',['exports'], function (exports) {
 
 
   var config = {
-    baseUrl: 'http://localhost:3001',
+    baseUrl: 'http://localhost:3002',
 
     signupUrl: 'users',
 
@@ -107,6 +107,7 @@ define('login',['exports', 'aurelia-auth', 'aurelia-framework'], function (expor
       var _this = this;
 
       return this.auth.login(this.email, this.password).then(function (response) {
+        localStorage.setItem('access_token', response.access_token);
         console.log("Login response: " + response);
       }).catch(function (error) {
         _this.loginError = error.response;
@@ -141,6 +142,7 @@ define('logout',['exports', 'aurelia-auth', 'aurelia-framework'], function (expo
 
     Logout.prototype.activate = function activate() {
       this.authService.logout("#/login").then(function (response) {
+        localStorage.removeItem('access_token');
         console.log("Logged Out");
       }).catch(function (err) {
         console.log("Error Logging Out");
@@ -175,7 +177,9 @@ define('main',['exports', './environment', './auth-config'], function (exports, 
   });
 
   function configure(aurelia) {
-    aurelia.use.standardConfiguration().feature('resources');
+    aurelia.use.standardConfiguration().plugin('aurelia-auth', function (baseConfig) {
+      baseConfig.configure(_authConfig2.default);
+    }).feature('resources');
 
     if (_environment2.default.debug) {
       aurelia.use.developmentLogging();
@@ -440,7 +444,7 @@ define('secret-quote',['exports', 'aurelia-framework', 'aurelia-http-client'], f
       this.secretQuote = '';
 
       this.http = http.configure(function (x) {
-        x.withHeader('Authorization', 'Bearer ' + localStorage.getItem('aurelia_id_token'));
+        x.withHeader('Authorization', 'Bearer ' + localStorage.getItem('access_token'));
       });
     }
 
@@ -491,7 +495,8 @@ define('signup',['exports', 'aurelia-framework', 'aurelia-auth'], function (expo
       var userInfo = { email: this.email, password: this.password };
 
       return this.auth.signup(userInfo).then(function (response) {
-        console.log("Signed Up!");
+        localStorage.setItem('access_token', response.access_token);
+        console.log("Signed Up!", response);
       }).catch(function (error) {
         _this.signupError = error.response;
       });
@@ -1855,7 +1860,7 @@ define('aurelia-auth/auth-filter',["exports"], function (exports) {
     return AuthFilterValueConverter;
   }();
 });
-define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"bootstrap/css/bootstrap.css\"></require>\n  <require from='./nav-bar'></require>\n\n  <nav-bar router.bind=\"router\"></nav-bar>\n\n  <div class=\"container\">\n    <router-view></router-view>\n  </div>\n\n</template>\n"; });
+define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"bootstrap/css/bootstrap.css\"></require>\n  <require from='./nav-bar'></require>\n\n  <nav-bar router.bind=\"router\"></nav-bar>\n\n  <hr />\n\n  <div class=\"container\">\n    <router-view></router-view>\n  </div>\n\n</template>\n"; });
 define('text!login.html', ['module'], function(module) { module.exports = "<template>\n  <section>\n    <h2>${heading}</h2>\n\n    <form role=\"form\" submit.delegate=\"login()\">\n      <div class=\"form-group\">\n        <label for=\"email\">Email</label>\n        <input type=\"text\" value.bind=\"email\" class=\"form-control\" id=\"email\" placeholder=\"Email\">\n      </div>\n      <div class=\"form-group\">\n        <label for=\"password\">Password</label>\n        <input type=\"password\" value.bind=\"password\" class=\"form-control\" id=\"password\" placeholder=\"Password\">\n      </div>\n      <button type=\"submit\" class=\"btn btn-default\">Login</button>\n    </form>\n\n    <hr>\n    <div class=\"alert alert-danger\" if.bind=\"loginError\">${loginError}</div>\n  </section>\n</template>"; });
 define('text!logout.html', ['module'], function(module) { module.exports = "<!-- Aurelia expects a template for each route.\nWe don't actuall need a template for logging out, \nbut we provide an empty one to not get any errors -->\n<template></template>"; });
 define('text!nav-bar.html', ['module'], function(module) { module.exports = "<template>\n  <nav class=\"navbar navbar-default navbar-fixed-top\" role=\"navigation\">\n    <div class=\"navbar-header\">\n      <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1\">\n        <span class=\"sr-only\">Toggle Navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class=\"navbar-brand\" href=\"#\">\n        <i class=\"fa fa-quote-left\"></i>\n        <i class=\"fa fa-quote-right\"></i>\n        <span>${router.title}</span>\n      </a>\n    </div>\n\n    <div class=\"collapse navbar-collapse\" id=\"bs-example-navbar-collapse-1\">\n      <ul class=\"nav navbar-nav\">\n        <li repeat.for=\"row of router.navigation | authFilter: isAuthenticated\" class=\"${row.isActive ? 'active' : ''}\">\n          <a data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1.in\" href.bind=\"row.href\">${row.title}</a>\n        </li>\n      </ul>\n\n      <ul if.bind=\"!isAuthenticated\" class=\"nav navbar-nav navbar-right\">\n        <li><a href=\"/#/login\">Login</a></li>\n        <li><a href=\"/#/signup\">Signup</a></li>\n      </ul>\n\n      <ul if.bind=\"isAuthenticated\" class=\"nav navbar-nav navbar-right\">\n        <li><a href=\"/#/logout\">Logout</a></li>\n      </ul>\n\n      <ul class=\"nav navbar-nav navbar-right\">\n        <li class=\"loader\" if.bind=\"router.isNavigating\">\n          <i class=\"fa fa-spinner fa-spin fa-2x\"></i>\n        </li>\n      </ul>\n    </div>\n  </nav>\n</template>\n"; });

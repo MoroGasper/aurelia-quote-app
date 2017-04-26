@@ -23,6 +23,7 @@ export class Login {
   login() {
     return this.auth.login(this.email, this.password)
     .then(response => {
+      localStorage.setItem('access_token', response.access_token);
       console.log("Login response: " + response);
     })
     .catch(error => {
